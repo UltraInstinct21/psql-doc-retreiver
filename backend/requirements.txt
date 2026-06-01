@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+langchain-postgres
+langchain-huggingface
+langchain-google-genai
+sentence-transformers
+asyncpg
