@@ -35,12 +35,13 @@ Rules:
 - Keep explanation concise and technical.
 - Keep optimization_notes focused on query performance or schema guidance.
 - Keep assumptions explicit and minimal.
+- Use conversation history for follow-up context.
 - Do not add markdown or code fences.
 """,
                 ),
                 (
                     "user",
-                    "QUESTION:\n{question}\n\nREWRITE:\n{rewrite}\n\nCONTEXT:\n{context}\n\nReturn JSON only.",
+                    "CONVERSATION_HISTORY:\n{history}\n\nQUESTION:\n{question}\n\nREWRITE:\n{rewrite}\n\nCONTEXT:\n{context}\n\nReturn JSON only.",
                 ),
             ])
             llm = ChatGoogleGenerativeAI(
@@ -82,13 +83,17 @@ Rules:
             assumptions=str(data.get("assumptions", "")).strip(),
         )
 
-    async def generate(self, question: str, rewrite: QueryRewritePlan, chunks: list[RetrievedChunk]) -> AnswerPayload:
+    async def generate(self, question: str, rewrite: QueryRewritePlan, chunks: list[RetrievedChunk], history: str = "") -> AnswerPayload:
         if not self._chain:
             return self._default_answer()
 
         context = self._build_context(chunks)
-        raw = await asyncio.to_thread(
-            self._chain.invoke,
-            {"question": question, "rewrite": rewrite.model_dump_json(), "context": context},
-        )
-        return self._parse_payload(raw)
+        try:
+            raw = await asyncio.to_thread(
+                self._chain.invoke,
+                {"question": question, "rewrite": rewrite.model_dump_json(), "context": context, "history": history},
+            )
+            return self._parse_payload(raw)
+        except Exception as err:
+            self._logger.warning("Answer generation failed due to network/API error: %s. Returning default answer.", err)
+            return self._default_answer()

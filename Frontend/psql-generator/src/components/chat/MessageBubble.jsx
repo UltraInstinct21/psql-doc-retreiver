@@ -11,15 +11,13 @@ export function MessageBubble({ children, className, ...props }) {
       )}
       {...props}
     >
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-        <User className="size-4 text-muted-foreground" />
+      {/* User avatar — deep plum circle */}
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-deep-plum ring-1 ring-warm-sand/10">
+        <User className="size-4 text-stone" />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div
-          className={cn(
-            "inline-block max-w-[640px] rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] leading-[1.5] text-[#1d1d1f] dark:bg-[#2a2a2c] dark:text-[#f5f5f7]"
-          )}
-        >
+
+      <div className="min-w-0 flex-1">
+        <div className="inline-block max-w-full sm:max-w-[640px] rounded-[8px] bg-deep-plum px-4 py-3 text-[15px] leading-[1.6] text-cream-mist ring-1 ring-warm-sand/10">
           {children}
         </div>
       </div>

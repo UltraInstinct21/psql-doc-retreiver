@@ -2,17 +2,26 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from psycopg_pool import AsyncConnectionPool
 
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import settings
+from backend.app.services.memory import SessionMemory
 from backend.app.services.rag_service import RAGService
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    pg_pool = AsyncConnectionPool(settings.pg_connection_string, open=False)
+    await pg_pool.open()
+    await SessionMemory.create_tables(pg_pool)
+
+    app.state.pg_pool = pg_pool
+    app.state.memory = SessionMemory(pg_pool)
     app.state.rag_service = RAGService()
     await app.state.rag_service.initialize()
     yield
+    await pg_pool.close()
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)

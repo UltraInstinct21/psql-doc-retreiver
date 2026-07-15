@@ -3,57 +3,89 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
+/* ─── Dashlane: Midnight Vault with Mint Keyholes ─── */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-saans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-saansmono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'JetBrains Mono', monospace;
+  --font-sans: var(--font-saans);
+  --font-mono: var(--font-saansmono);
 
-  /* Apple-inspired colors */
-  --color-action-blue: #0066cc;
-  --color-action-blue-focus: #0071e3;
-  --color-sky-link: #2997ff;
-  --color-canvas: #ffffff;
-  --color-canvas-parchment: #f5f5f7;
-  --color-surface-pearl: #fafafc;
-  --color-surface-tile-1: #272729;
-  --color-surface-tile-2: #2a2a2c;
-  --color-surface-tile-3: #252527;
-  --color-surface-black: #000000;
-  --color-chip-gray: rgba(210, 210, 215, 0.64);
-  --color-ink: #1d1d1f;
-  --color-body-muted: #cccccc;
-  --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #7a7a7a;
-  --color-divider-soft: #f0f0f0;
-  --color-hairline: #e0e0e0;
+  /* ── Colors ── */
+  --color-cocoa-black: #200f0a;
+  --color-cream-mist: #fcfaf9;
+  --color-warm-sand: #e3ccc0;
+  --color-ash-gray: #e5e7eb;
+  --color-stone: #a69f9d;
+  --color-deep-plum: #2b2538;
+  --color-aubergine: #4d3f3b;
+  --color-mint-keyhole: #a2f6f5;
+  --color-iris: #858df9;
+  --color-periwinkle: #6c74df;
+  --color-lavender-mist: #b6bbfb;
 
-  /* Apple border radius */
-  --radius-xs: 5px;
-  --radius-sm: 8px;
-  --radius-md: 11px;
-  --radius-lg: 18px;
+  /* ── Typography Scale ── */
+  --text-caption: 12px;
+  --leading-caption: 1.5;
+  --tracking-caption: 0.24px;
+  --text-body-sm: 14px;
+  --leading-body-sm: 1.5;
+  --tracking-body-sm: 0.14px;
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --tracking-body: 0.16px;
+  --text-subheading: 18px;
+  --leading-subheading: 1.5;
+  --tracking-subheading: 0.18px;
+  --text-heading-sm: 28px;
+  --leading-heading-sm: 1.2;
+  --tracking-heading-sm: 0.28px;
+  --text-heading: 36px;
+  --leading-heading: 1.17;
+  --tracking-heading: 0.36px;
+  --text-heading-lg: 48px;
+  --leading-heading-lg: 1.17;
+  --tracking-heading-lg: 0.48px;
+  --text-display: 72px;
+  --leading-display: 1.1;
+  --tracking-display: 0.72px;
+  --text-display-xl: 100px;
+  --leading-display-xl: 1.1;
+  --tracking-display-xl: 1px;
+
+  /* ── Spacing (4px base) ── */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+  --spacing-44: 44px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-120: 120px;
+
+  /* ── Border Radius ── */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
   --radius-pill: 9999px;
 
-  /* Apple spacing (base 8px) */
-  --spacing-xxs: 4px;
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 17px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 48px;
-  --spacing-section: 80px;
+  /* ── Weight Tokens (for reference) ── */
+  --font-weight-light: 300;
+  --font-weight-medium: 500;
 
-  /* Sidebar (shadcn compat) */
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+  /* ── Shadcn / Theme Variable Passthrough ── */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -77,82 +109,55 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #1d1d1f;
-  --card: #ffffff;
-  --card-foreground: #1d1d1f;
-  --popover: #ffffff;
-  --popover-foreground: #1d1d1f;
-  --primary: #0066cc;
-  --primary-foreground: #ffffff;
-  --secondary: #f5f5f7;
-  --secondary-foreground: #1d1d1f;
-  --muted: #f5f5f7;
-  --muted-foreground: #7a7a7a;
-  --accent: #f5f5f7;
-  --accent-foreground: #1d1d1f;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e0e0e0;
-  --input: #e0e0e0;
-  --ring: #0066cc;
+/* ─── Force Dark (Dashlane is a dark-only palette) ─── */
+/* .light gets same vars — theme toggle is a no-op in this app */
+:root,
+.dark,
+.light {
+  /* Page & surface */
+  --background: #200f0a;
+  --foreground: #fcfaf9;
+  --card: #2b2538;
+  --card-foreground: #fcfaf9;
+  --popover: #2b2538;
+  --popover-foreground: #fcfaf9;
+
+  /* Primary = Mint Keyhole */
+  --primary: #a2f6f5;
+  --primary-foreground: #200f0a;
+
+  /* Secondary = Iris */
+  --secondary: #858df9;
+  --secondary-foreground: #fcfaf9;
+
+  /* Muted = Deep Plum */
+  --muted: #2b2538;
+  --muted-foreground: #a69f9d;
+
+  /* Accent = Aubergine */
+  --accent: #4d3f3b;
+  --accent-foreground: #fcfaf9;
+
+  /* Destructive */
+  --destructive: oklch(0.637 0.237 25.331);
+
+  /* Borders & inputs — warm sand */
+  --border: rgba(227, 204, 192, 0.15);
+  --input: rgba(227, 204, 192, 0.25);
+  --ring: #a2f6f5;
+
+  /* Radius */
   --radius: 0.375rem;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #f5f5f7;
-  --sidebar-foreground: #1d1d1f;
-  --sidebar-primary: #0066cc;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8e8ed;
-  --sidebar-accent-foreground: #1d1d1f;
-  --sidebar-border: #e0e0e0;
-  --sidebar-ring: #0066cc;
-}
 
-.dark {
-  --background: #1d1d1f;
-  --foreground: #f5f5f7;
-  --card: #272729;
-  --card-foreground: #f5f5f7;
-  --popover: #272729;
-  --popover-foreground: #f5f5f7;
-  --primary: #2997ff;
-  --primary-foreground: #1d1d1f;
-  --secondary: #272729;
-  --secondary-foreground: #f5f5f7;
-  --muted: #272729;
-  --muted-foreground: #7a7a7a;
-  --accent: #272729;
-  --accent-foreground: #f5f5f7;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #2997ff;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #272729;
-  --sidebar-foreground: #f5f5f7;
-  --sidebar-primary: #2997ff;
-  --sidebar-primary-foreground: #1d1d1f;
-  --sidebar-accent: #2a2a2c;
-  --sidebar-accent-foreground: #f5f5f7;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #2997ff;
+  /* Chart (warm-tinted) */
+  --chart-1: #a2f6f5;
+  --chart-2: #858df9;
+  --chart-3: #b6bbfb;
+  --chart-4: #6c74df;
+  --chart-5: #a69f9d;
+
 }
 
 @layer base {
@@ -160,20 +165,35 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
-    font-size: 17px;
-    line-height: 1.47;
-    letter-spacing: -0.374px;
+    @apply bg-cocoa-black text-cream-mist font-sans;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-weight: 500;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-  html {
-    @apply font-sans;
-  }
   ::selection {
-    background-color: rgba(0, 102, 204, 0.15);
+    background-color: rgba(162, 246, 245, 0.2);
+  }
+
+  /* Scrollbar — subtle mint on cocoa */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(227, 204, 192, 0.15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(227, 204, 192, 0.25);
   }
 }

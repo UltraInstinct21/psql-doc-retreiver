@@ -3,6 +3,8 @@ import { SubNav } from "@/components/layout/SubNav"
 import { ChatTimeline } from "@/components/chat/ChatTimeline"
 import { InputComposer } from "@/components/chat/InputComposer"
 import { createRagClient, DEFAULT_API_BASE_URL } from "@/lib/api"
+import { X, Clock, Trash2, Check } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const HISTORY_STORAGE_KEY = "psql-generator-history"
 const SETTINGS_STORAGE_KEY = "psql-generator-settings"
@@ -21,12 +23,16 @@ function makeId(prefix) {
   if (window.crypto?.randomUUID) {
     return `${prefix}-${window.crypto.randomUUID()}`
   }
-
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
 function formatTime(timestamp) {
-  return new Date(timestamp).toLocaleString([], { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })
+  return new Date(timestamp).toLocaleString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+    day: "numeric",
+  })
 }
 
 export function App() {
@@ -66,10 +72,7 @@ export function App() {
       .catch(() => {
         if (!cancelled) setApiStatus("offline")
       })
-
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [client])
 
   const sendQuery = async (query) => {
@@ -143,59 +146,80 @@ export function App() {
   const clearChat = () => setMessages([])
 
   return (
-    <div className="flex min-h-svh flex-col bg-background">
+    <div className="flex min-h-svh flex-col bg-cocoa-black">
       <SubNav
         onHistoryClick={() => setHistoryOpen((current) => !current)}
         onSettingsClick={() => setSettingsOpen((current) => !current)}
       />
-      <main className="flex flex-1 flex-col pt-13 pb-32">
+      <main className="flex flex-1 flex-col pt-13">
         <ChatTimeline
+          className="flex-1 min-h-0"
           messages={messages}
           isLoading={isSending}
           onSuggestionSelect={sendQuery}
         />
+        <InputComposer
+          retrievalEnabled={retrievalEnabled}
+          onRetrievalToggle={setRetrievalEnabled}
+          onSend={sendQuery}
+          isSending={isSending}
+        />
       </main>
-      <InputComposer
-        retrievalEnabled={retrievalEnabled}
-        onRetrievalToggle={setRetrievalEnabled}
-        onSend={sendQuery}
-        isSending={isSending}
-      />
 
+      {/* ─── History Panel ─── */}
       {historyOpen && (
-        <div className="fixed top-13 right-0 bottom-0 z-40 w-full max-w-sm border-l border-border/50 bg-background/95 backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
-            <div>
-              <h3 className="text-[14px] font-semibold">History</h3>
-              <p className="text-[12px] text-muted-foreground">Recent queries from this browser</p>
+        <div className="fixed inset-x-0 top-13 bottom-0 z-40 w-full sm:right-0 sm:left-auto sm:w-full sm:max-w-sm border-l border-warm-sand/10 bg-cocoa-black/95 backdrop-blur-2xl">
+          <div className="flex items-center justify-between border-b border-warm-sand/10 px-5 py-4">
+            <div className="min-w-0">
+              <h3 className="text-[15px] font-medium text-cream-mist">History</h3>
+              <p className="text-[12px] text-stone/60">Recent queries from this browser</p>
             </div>
-            <button className="text-[12px] text-muted-foreground" onClick={() => setHistoryOpen(false)}>
-              Close
+            <button
+              onClick={() => setHistoryOpen(false)}
+              className="flex size-8 shrink-0 items-center justify-center rounded-pill text-stone/60 hover:text-cream-mist hover:bg-deep-plum/60 transition-colors"
+              aria-label="Close history"
+            >
+              <X className="size-4" />
             </button>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 text-[12px] text-muted-foreground">
-            <span>{history.length} queries saved</span>
-            <button className="text-primary" onClick={clearChat}>Clear chat</button>
+
+          <div className="flex items-center justify-between px-5 py-3 text-[12px]">
+            <span className="text-stone/60">{history.length} queries saved</span>
+            <button
+              onClick={clearChat}
+              className="inline-flex items-center gap-1 text-stone/60 hover:text-cream-mist transition-colors"
+            >
+              <Trash2 className="size-3" />
+              Clear chat
+            </button>
           </div>
-          <div className="space-y-2 overflow-y-auto px-4 pb-4">
+
+          <div className="space-y-2 overflow-y-auto px-5 pb-5">
             {history.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border/50 p-4 text-[13px] text-muted-foreground">
-                No history yet. Send a question to start building a reusable query log.
-              </p>
+              <div className="rounded-[8px] border border-dashed border-warm-sand/10 bg-deep-plum/30 p-5 text-center">
+                <Clock className="mx-auto size-5 text-stone/40 mb-2" />
+                <p className="text-[13px] text-stone/60">
+                  No history yet. Send a question to start building a reusable query log.
+                </p>
+              </div>
             ) : (
               history.map((item) => (
                 <button
                   key={item.id}
-                  className="w-full rounded-lg border border-border/50 bg-muted/20 p-3 text-left transition-colors hover:bg-muted/40"
                   onClick={() => replayHistory(item)}
+                  className="w-full rounded-[8px] border border-warm-sand/10 bg-deep-plum/40 p-3 text-left transition-all hover:bg-deep-plum/70 hover:border-warm-sand/20 active:bg-deep-plum"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[13px] font-medium">{item.query}</span>
-                    <span className="text-[11px] text-muted-foreground">{formatTime(item.timestamp)}</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="truncate text-[13px] font-medium text-cream-mist/90">
+                      {item.query}
+                    </span>
+                    <span className="shrink-0 text-[11px] text-stone/50">
+                      {formatTime(item.timestamp)}
+                    </span>
                   </div>
-                  <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>{item.rewrite || "No rewrite cached"}</span>
-                    <span>{item.chunks} chunks</span>
+                  <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-stone/50">
+                    <span className="truncate">{item.rewrite || "No rewrite cached"}</span>
+                    <span className="shrink-0">{item.chunks} chunks</span>
                   </div>
                 </button>
               ))
@@ -204,62 +228,107 @@ export function App() {
         </div>
       )}
 
+      {/* ─── Settings Panel ─── */}
       {settingsOpen && (
-        <div className="fixed top-13 right-0 bottom-0 z-40 w-full max-w-sm border-l border-border/50 bg-background/95 backdrop-blur-xl">
-          <div className="border-b border-border/40 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-[14px] font-semibold">Settings</h3>
-                <p className="text-[12px] text-muted-foreground">Backend and retrieval controls</p>
-              </div>
-              <button className="text-[12px] text-muted-foreground" onClick={() => setSettingsOpen(false)}>
-                Close
-              </button>
+        <div className="fixed inset-x-0 top-13 bottom-0 z-40 w-full sm:right-0 sm:left-auto sm:w-full sm:max-w-sm border-l border-warm-sand/10 bg-cocoa-black/95 backdrop-blur-2xl">
+          <div className="flex items-center justify-between border-b border-warm-sand/10 px-5 py-4">
+            <div className="min-w-0">
+              <h3 className="text-[15px] font-medium text-cream-mist">Settings</h3>
+              <p className="text-[12px] text-stone/60">Backend and retrieval controls</p>
             </div>
+            <button
+              onClick={() => setSettingsOpen(false)}
+              className="flex size-8 shrink-0 items-center justify-center rounded-pill text-stone/60 hover:text-cream-mist hover:bg-deep-plum/60 transition-colors"
+              aria-label="Close settings"
+            >
+              <X className="size-4" />
+            </button>
           </div>
-          <div className="space-y-4 px-4 py-4 text-[13px]">
-            <label className="block space-y-1">
-              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">API base URL</span>
+
+          <div className="space-y-5 px-5 py-5">
+            {/* API URL */}
+            <label className="block space-y-1.5">
+              <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-stone/60">
+                API Base URL
+              </span>
               <input
                 value={settings.apiBaseUrl}
-                onChange={(e) => setSettings((current) => ({ ...current, apiBaseUrl: e.target.value }))}
-                className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-[13px]"
+                onChange={(e) =>
+                  setSettings((current) => ({ ...current, apiBaseUrl: e.target.value }))
+                }
+                className="w-full rounded-sm border border-warm-sand/15 bg-deep-plum/60 px-3 py-2.5 text-[13px] text-cream-mist outline-none placeholder:text-stone/40 transition-colors focus:border-mint-keyhole/40 focus:ring-1 focus:ring-mint-keyhole/20"
               />
             </label>
-            <label className="block space-y-1">
-              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">Top K</span>
+
+            {/* Top K */}
+            <label className="block space-y-1.5">
+              <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-stone/60">
+                Top K
+              </span>
               <input
                 type="number"
                 min="1"
                 max="20"
                 value={settings.topK}
-                onChange={(e) => setSettings((current) => ({ ...current, topK: Number(e.target.value) || 5 }))}
-                className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-[13px]"
+                onChange={(e) =>
+                  setSettings((current) => ({ ...current, topK: Number(e.target.value) || 5 }))
+                }
+                className="w-full rounded-sm border border-warm-sand/15 bg-deep-plum/60 px-3 py-2.5 text-[13px] text-cream-mist outline-none transition-colors focus:border-mint-keyhole/40 focus:ring-1 focus:ring-mint-keyhole/20"
               />
             </label>
+
+            {/* Default retrieval toggle */}
             <button
-              className="flex w-full items-center justify-between rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-left"
               onClick={() => {
                 const next = !settings.defaultRetrievalEnabled
                 setSettings((current) => ({ ...current, defaultRetrievalEnabled: next }))
                 setRetrievalEnabled(next)
               }}
+              className="flex w-full items-center justify-between rounded-sm border border-warm-sand/15 bg-deep-plum/60 px-3 py-2.5 text-[13px] text-left text-cream-mist transition-colors hover:bg-deep-plum"
             >
-              <span>Default retrieval</span>
-              <span className={settings.defaultRetrievalEnabled ? "text-primary" : "text-muted-foreground"}>
-                {settings.defaultRetrievalEnabled ? "On" : "Off"}
+              <span className="font-medium">Default retrieval</span>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 text-[12px]",
+                  settings.defaultRetrievalEnabled
+                    ? "text-mint-keyhole"
+                    : "text-stone/50"
+                )}
+              >
+                {settings.defaultRetrievalEnabled ? (
+                  <><Check className="size-3" /> On</>
+                ) : (
+                  "Off"
+                )}
               </span>
             </button>
-            <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2 text-[12px] text-muted-foreground">
-              Backend status: <span className={apiStatus === "online" ? "text-green-600" : apiStatus === "offline" ? "text-red-600" : "text-muted-foreground"}>{apiStatus}</span>
+
+            {/* Backend status */}
+            <div className="flex items-center justify-between rounded-sm border border-warm-sand/10 bg-deep-plum/40 px-3 py-2.5 text-[12px]">
+              <span className="text-stone/60">Backend status</span>
+              <span
+                className={cn(
+                  "font-medium",
+                  apiStatus === "online"
+                    ? "text-mint-keyhole"
+                    : apiStatus === "offline"
+                      ? "text-destructive"
+                      : "text-stone/50"
+                )}
+              >
+                {apiStatus}
+              </span>
             </div>
           </div>
         </div>
       )}
 
+      {/* ─── Error Toast ─── */}
       {error && (
-        <div className="fixed bottom-36 left-1/2 z-50 -translate-x-1/2 rounded-full border border-destructive/30 bg-background px-4 py-2 text-[12px] text-destructive shadow-lg">
-          {error}
+        <div className="fixed bottom-36 left-1/2 z-50 -translate-x-1/2">
+          <div className="rounded-pill bg-aubergine px-5 py-2.5 text-[13px] font-medium text-cream-mist ring-1 ring-warm-sand/15 shadow-lg">
+            {error}
+          </div>
         </div>
       )}
     </div>

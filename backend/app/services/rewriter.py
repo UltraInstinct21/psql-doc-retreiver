@@ -120,6 +120,10 @@ Rewrite rules:
         if not self._chain:
             return self._default_plan(query)
 
-        raw = await asyncio.to_thread(self._chain.invoke, {"query": query})
-        self._logger.debug("Rewriter raw output: %s", raw)
-        return self._normalize_plan(raw, query)
+        try:
+            raw = await asyncio.to_thread(self._chain.invoke, {"query": query})
+            self._logger.debug("Rewriter raw output: %s", raw)
+            return self._normalize_plan(raw, query)
+        except Exception as err:
+            self._logger.warning("Query rewriting failed due to network/API error: %s. Returning default plan.", err)
+            return self._default_plan(query)
