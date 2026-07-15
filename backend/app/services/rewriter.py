@@ -25,6 +25,7 @@ You are QueryRewriteAgent for a PostgreSQL documentation RAG system.
 
 Goal:
 - Rewrite the user query for retrieval, not for answering.
+- Use the conversation history to resolve coreferences, context, and follow-ups.
 - Produce retrieval-friendly language that matches documentation vocabulary.
 - Keep rewrites concise, factual, and grounded in the user query.
 
@@ -49,7 +50,10 @@ Rewrite rules:
 - Do not add explanation text, markdown, or code fences.
 """,
                 ),
-                ("user", "Rewrite this query for retrieval:\n{query}\n\nReturn JSON only."),
+                (
+                    "user",
+                    "CONVERSATION_HISTORY:\n{history}\n\nUSER_QUERY:\n{query}\n\nRewrite this query for retrieval, taking history into account. Return JSON only.",
+                ),
             ])
             llm = ChatGoogleGenerativeAI(
                 model=settings.gemini_model,
@@ -116,12 +120,12 @@ Rewrite rules:
             difficulty=str(data.get("difficulty", "intermediate")),
         )
 
-    async def rewrite(self, query: str) -> QueryRewritePlan:
+    async def rewrite(self, query: str, history: str = "") -> QueryRewritePlan:
         if not self._chain:
             return self._default_plan(query)
 
         try:
-            raw = await asyncio.to_thread(self._chain.invoke, {"query": query})
+            raw = await asyncio.to_thread(self._chain.invoke, {"query": query, "history": history})
             self._logger.debug("Rewriter raw output: %s", raw)
             return self._normalize_plan(raw, query)
         except Exception as err:

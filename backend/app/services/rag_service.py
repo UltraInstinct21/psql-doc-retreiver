@@ -16,8 +16,8 @@ class RAGService:
     async def initialize(self) -> None:
         await self.retriever.initialize()
 
-    async def rewrite(self, query: str) -> QueryRewritePlan:
-        return await self.rewriter.rewrite(query)
+    async def rewrite(self, query: str, history: str = "") -> QueryRewritePlan:
+        return await self.rewriter.rewrite(query, history=history)
 
     async def chat(
         self,
@@ -27,7 +27,7 @@ class RAGService:
         retrieval_enabled: bool = True,
         top_k: int | None = None,
     ) -> ChatResponse:
-        rewrite = await self.rewrite(query)
+        rewrite = await self.rewrite(query, history=history)
         chunks: list[RetrievedChunk] = []
         if retrieval_enabled:
             chunks = await self.retriever.retrieve(
